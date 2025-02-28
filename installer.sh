@@ -41,16 +41,4 @@ ufw reload
 echo "🐍 Installing Python dependencies..."
 pip3 install fastapi uvicorn celery redis whisper ffmpeg-python moviepy pydub transformers googletrans torch torchaudio yt-dlp streamlit
 
-# Завантаження та розгортання коду
-echo "📥 Cloning repository..."
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git /opt/voice-translator
-
-# Налаштування дозволів
-chmod +x /opt/voice-translator/*.py
-
-# Запуск веб-інтерфейсу
-echo "🚀 Starting Streamlit UI..."
-cd /opt/voice-translator
-streamlit run gui.py --server.port 8501 --server.enableCORS false --server.enableXsrfProtection false &
-
 echo "✅ Installation complete!"
