@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e  # Вихід при помилці
+set -e  # Якщо щось падає – зупиняємо виконання
 
 # Оновлення системи
 echo "📥 Updating system..."
@@ -13,7 +13,7 @@ apt install -y ca-certificates curl gnupg ffmpeg redis python3 python3-venv pyth
 # ✅ Виправлення проблеми з pip3
 echo "🐍 Installing pip3..."
 if ! command -v pip3 &> /dev/null; then
-    apt install -y python3-pip || curl -sS https://bootstrap.pypa.io/get-pip.py | python3
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3
 fi
 
 # ✅ Додаємо офіційний Docker-репозиторій
@@ -30,7 +30,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # ✅ Перевірка Docker
-docker --version || echo "⚠️ Docker installation failed"
+docker --version || { echo "❌ Docker installation failed"; exit 1; }
 
 # ✅ Встановлення та запуск Nginx
 echo "🌍 Installing and starting Nginx..."
@@ -39,7 +39,7 @@ if ! command -v nginx &> /dev/null; then
     systemctl enable nginx
     systemctl start nginx
 fi
-systemctl status nginx --no-pager || echo "⚠️ Nginx installation failed"
+systemctl status nginx --no-pager || { echo "❌ Nginx installation failed"; exit 1; }
 
 # ✅ Відкриття портів
 echo "🔓 Configuring firewall..."
@@ -52,7 +52,7 @@ ufw reload || true
 # ✅ Встановлення Python-залежностей
 echo "🐍 Installing Python dependencies..."
 pip3 install --upgrade pip
-pip3 install fastapi uvicorn celery redis whisper ffmpeg-python moviepy pydub transformers googletrans torch torchaudio yt-dlp streamlit || echo "⚠️ Python dependency installation failed"
+pip3 install fastapi uvicorn celery redis whisper ffmpeg-python moviepy pydub transformers googletrans torch torchaudio yt-dlp streamlit || { echo "❌ Python dependency installation failed"; exit 1; }
 
 # ✅ Фінальне підтвердження
 echo "✅ Installation complete!"
