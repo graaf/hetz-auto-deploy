@@ -6,21 +6,31 @@ apt update && apt upgrade -y
 
 # Встановлення необхідних пакетів
 echo "🛠️ Installing dependencies..."
-apt install -y ffmpeg redis docker docker-compose python3 python3-pip nginx git
+apt install -y ca-certificates curl gnupg ffmpeg redis python3 python3-pip nginx git
 
-# Встановлення Python-залежностей
-echo "🐍 Installing Python dependencies..."
-pip3 install fastapi uvicorn celery redis whisper ffmpeg-python moviepy pydub transformers googletrans torch torchaudio yt-dlp streamlit
+# Додаємо офіційний Docker-репозиторій
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
+chmod a+r /etc/apt/keyrings/docker.asc
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Налаштування Docker
-echo "🐳 Setting up Docker..."
-systemctl start docker
+# Встановлення Docker
+apt update
+apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 systemctl enable docker
+systemctl start docker
 
-# Встановлення та запуск Nginx
+# Перевірка Docker
+docker --version
+
+# Налаштування Nginx
 echo "🌍 Setting up Nginx..."
-systemctl start nginx
 systemctl enable nginx
+systemctl start nginx
+
+# Дозволяємо необхідні порти
 ufw allow 80/tcp
 ufw allow 443/tcp
 ufw allow 8000/tcp
